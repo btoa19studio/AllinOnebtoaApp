@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>All in One App</title>
+
+  <!-- Leaflet CSS (Peta) -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+  <!-- App CSS -->
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════
+     AUTH SCREENS  (Login / Signup)
+══════════════════════════════════════════════ -->
+<div id="auth-screen" class="auth-screen">
+  <div class="auth-card">
+    <div class="auth-brand">
+      <div class="auth-logo"><span>A</span></div>
+      <h1>All in One App</h1>
+      <p>Semua yang kamu butuhkan, dalam satu tempat.</p>
+    </div>
+
+    <!-- LOGIN FORM -->
+    <div id="login-form" class="auth-form active">
+      <h2>Masuk</h2>
+      <div class="form-group">
+        <label for="login-email">Email</label>
+        <input type="email" id="login-email" placeholder="nama@email.com" autocomplete="email" />
+      </div>
+      <div class="form-group">
+        <label for="login-password">Password</label>
+        <input type="password" id="login-password" placeholder="••••••••" autocomplete="current-password" />
+      </div>
+      <div id="login-error" class="auth-error"></div>
+      <button id="btn-login" class="btn-primary btn-full">
+        <span>Masuk</span>
+      </button>
+      <p class="auth-switch">Belum punya akun? <a href="#" id="go-signup">Daftar sekarang</a></p>
+    </div>
+
+    <!-- SIGNUP FORM -->
+    <div id="signup-form" class="auth-form">
+      <h2>Buat Akun</h2>
+      <div class="form-group">
+        <label for="signup-name">Nama Lengkap</label>
+        <input type="text" id="signup-name" placeholder="Nama kamu" autocomplete="name" />
+      </div>
+      <div class="form-group">
+        <label for="signup-email">Email</label>
+        <input type="email" id="signup-email" placeholder="nama@email.com" autocomplete="email" />
+      </div>
+      <div class="form-group">
+        <label for="signup-password">Password</label>
+        <input type="password" id="signup-password" placeholder="Min. 6 karakter" autocomplete="new-password" />
+      </div>
+      <div id="signup-error" class="auth-error"></div>
+      <button id="btn-signup" class="btn-primary btn-full">
+        <span>Daftar</span>
+      </button>
+      <p class="auth-switch">Sudah punya akun? <a href="#" id="go-login">Masuk</a></p>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     MAIN APP  (setelah login)
+══════════════════════════════════════════════ -->
+<div id="app" class="app hidden">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-logo">A</div>
+      <span class="sidebar-title">All in One</span>
+      <button class="sidebar-close" id="sidebar-close"><i data-lucide="x"></i></button>
+    </div>
+
+    <nav class="sidebar-nav">
+      <button class="nav-item active" data-page="dashboard">
+        <i data-lucide="layout-dashboard"></i><span>Dashboard</span>
+      </button>
+      <button class="nav-item" data-page="profile">
+        <i data-lucide="user-circle"></i><span>Profil</span>
+      </button>
+      <button class="nav-item" data-page="notes">
+        <i data-lucide="sticky-note"></i><span>Sticky Notes</span>
+      </button>
+      <button class="nav-item" data-page="todos">
+        <i data-lucide="check-square"></i><span>To Do List</span>
+      </button>
+      <button class="nav-item" data-page="journey">
+        <i data-lucide="map-pin"></i><span>Perjalanan Saya</span>
+      </button>
+      <button class="nav-item" data-page="calendar">
+        <i data-lucide="calendar-days"></i><span>Kalender</span>
+      </button>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="sidebar-user">
+        <div class="user-avatar" id="sidebar-avatar">?</div>
+        <div class="user-info">
+          <span class="user-name" id="sidebar-name">–</span>
+          <span class="user-email" id="sidebar-email">–</span>
+        </div>
+      </div>
+      <button id="btn-logout" title="Logout"><i data-lucide="log-out"></i></button>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <div class="main-wrapper">
+    <!-- TOP BAR -->
+    <header class="topbar">
+      <button id="menu-toggle"><i data-lucide="menu"></i></button>
+      <h2 id="page-title">Dashboard</h2>
+      <div class="topbar-right">
+        <div class="topbar-avatar" id="topbar-avatar">?</div>
+      </div>
+    </header>
+
+    <!-- PAGE VIEWS -->
+    <main class="page-content">
+
+      <!-- ── DASHBOARD ── -->
+      <section id="page-dashboard" class="page active">
+        <div class="dashboard-grid">
+          <div class="dash-card" id="dash-notes">
+            <div class="dash-card-icon notes-icon"><i data-lucide="sticky-note"></i></div>
+            <div class="dash-card-info">
+              <span class="dash-count" id="count-notes">0</span>
+              <span class="dash-label">Sticky Notes</span>
+            </div>
+          </div>
+          <div class="dash-card" id="dash-todos">
+            <div class="dash-card-icon todos-icon"><i data-lucide="check-square"></i></div>
+            <div class="dash-card-info">
+              <span class="dash-count" id="count-todos">0</span>
+              <span class="dash-label">Tugas Aktif</span>
+            </div>
+          </div>
+          <div class="dash-card" id="dash-journey">
+            <div class="dash-card-icon journey-icon"><i data-lucide="map-pin"></i></div>
+            <div class="dash-card-info">
+              <span class="dash-count" id="count-journey">0</span>
+              <span class="dash-label">Titik Perjalanan</span>
+            </div>
+          </div>
+          <div class="dash-card" id="dash-events">
+            <div class="dash-card-icon events-icon"><i data-lucide="calendar-days"></i></div>
+            <div class="dash-card-info">
+              <span class="dash-count" id="count-events">0</span>
+              <span class="dash-label">Event Hari Ini</span>
+            </div>
+          </div>
+        </div>
+        <div class="dash-sections">
+          <div class="dash-section">
+            <h3>Tugas Terbaru</h3>
+            <ul id="dash-recent-todos" class="dash-list"></ul>
+          </div>
+          <div class="dash-section">
+            <h3>Catatan Terbaru</h3>
+            <ul id="dash-recent-notes" class="dash-list"></ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── PROFILE ── -->
+      <section id="page-profile" class="page">
+        <div class="profile-card">
+          <div class="profile-avatar-wrap">
+            <div class="profile-avatar" id="profile-avatar-display">?</div>
+            <div class="avatar-color-picker">
+              <label>Warna Avatar</label>
+              <div class="color-swatches" id="color-swatches"></div>
+            </div>
+          </div>
+          <div class="profile-form">
+            <div class="form-group">
+              <label>Nama Lengkap</label>
+              <input type="text" id="profile-name" placeholder="Nama kamu" />
+            </div>
+            <div class="form-group">
+              <label>Email</label>
+              <input type="email" id="profile-email" disabled />
+            </div>
+            <div class="form-group">
+              <label>Bio</label>
+              <textarea id="profile-bio" rows="3" placeholder="Ceritakan sedikit tentang kamu..."></textarea>
+            </div>
+            <div class="form-group">
+              <label>Bergabung Sejak</label>
+              <input type="text" id="profile-joined" disabled />
+            </div>
+            <button id="btn-save-profile" class="btn-primary">Simpan Perubahan</button>
+            <div id="profile-msg" class="form-msg"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── STICKY NOTES ── -->
+      <section id="page-notes" class="page">
+        <div class="section-toolbar">
+          <button id="btn-add-note" class="btn-primary"><i data-lucide="plus"></i> Catatan Baru</button>
+          <div class="filter-bar">
+            <input type="text" id="notes-search" placeholder="Cari catatan..." />
+          </div>
+        </div>
+        <div class="notes-grid" id="notes-grid">
+          <div class="empty-state hidden" id="notes-empty">
+            <i data-lucide="sticky-note"></i>
+            <p>Belum ada catatan. Buat catatan pertamamu!</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── TO DO LIST ── -->
+      <section id="page-todos" class="page">
+        <div class="section-toolbar">
+          <button id="btn-add-todo" class="btn-primary"><i data-lucide="plus"></i> Tugas Baru</button>
+          <div class="filter-bar">
+            <select id="todo-filter">
+              <option value="all">Semua</option>
+              <option value="active">Aktif</option>
+              <option value="done">Selesai</option>
+            </select>
+          </div>
+        </div>
+        <div class="todo-list-wrap" id="todo-list">
+          <div class="empty-state hidden" id="todos-empty">
+            <i data-lucide="check-square"></i>
+            <p>Tidak ada tugas. Tambahkan tugas baru!</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── PERJALANAN ── -->
+      <section id="page-journey" class="page">
+        <div class="journey-layout">
+          <div class="journey-map-wrap">
+            <div id="journey-map"></div>
+            <div class="map-controls">
+              <button id="btn-record-loc" class="btn-primary">
+                <i data-lucide="navigation"></i> Rekam Lokasi Sekarang
+              </button>
+              <button id="btn-clear-journey" class="btn-secondary">
+                <i data-lucide="trash-2"></i> Hapus Semua
+              </button>
+            </div>
+          </div>
+          <div class="journey-timeline" id="journey-timeline">
+            <h3>Timeline Perjalanan</h3>
+            <div id="timeline-list">
+              <div class="empty-state" id="journey-empty">
+                <i data-lucide="map-pin"></i>
+                <p>Belum ada titik perjalanan tercatat.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── KALENDER ── -->
+      <section id="page-calendar" class="page">
+        <div class="calendar-wrap">
+          <div class="calendar-header">
+            <button id="cal-prev"><i data-lucide="chevron-left"></i></button>
+            <h3 id="cal-month-label">–</h3>
+            <button id="cal-next"><i data-lucide="chevron-right"></i></button>
+          </div>
+          <div class="calendar-grid-header">
+            <span>Min</span><span>Sen</span><span>Sel</span>
+            <span>Rab</span><span>Kam</span><span>Jum</span><span>Sab</span>
+          </div>
+          <div class="calendar-grid" id="calendar-grid"></div>
+          <div class="calendar-events-panel">
+            <h3 id="cal-selected-date">Pilih tanggal untuk melihat event</h3>
+            <ul id="cal-events-list"></ul>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     MODALS
+══════════════════════════════════════════════ -->
+
+<!-- Note Modal -->
+<div id="modal-note" class="modal-overlay hidden">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="modal-note-title">Catatan Baru</h3>
+      <button class="modal-close" data-modal="modal-note"><i data-lucide="x"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label>Judul</label>
+        <input type="text" id="note-title-input" placeholder="Judul catatan..." />
+      </div>
+      <div class="form-group">
+        <label>Isi Catatan</label>
+        <textarea id="note-body-input" rows="6" placeholder="Tulis catatanmu di sini..."></textarea>
+      </div>
+      <div class="form-group">
+        <label>Warna</label>
+        <div class="note-color-picker" id="note-color-picker"></div>
+      </div>
+      <div class="form-group">
+        <label>Tanggal (untuk Kalender)</label>
+        <input type="date" id="note-date-input" />
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button id="btn-save-note" class="btn-primary">Simpan</button>
+      <button class="btn-secondary modal-close" data-modal="modal-note">Batal</button>
+    </div>
+    <input type="hidden" id="note-edit-id" />
+  </div>
+</div>
+
+<!-- Todo Modal -->
+<div id="modal-todo" class="modal-overlay hidden">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="modal-todo-title">Tugas Baru</h3>
+      <button class="modal-close" data-modal="modal-todo"><i data-lucide="x"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label>Nama Tugas</label>
+        <input type="text" id="todo-name-input" placeholder="Apa yang perlu dilakukan?" />
+      </div>
+      <div class="form-group">
+        <label>Deskripsi (opsional)</label>
+        <textarea id="todo-desc-input" rows="3" placeholder="Detail tugas..."></textarea>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Deadline</label>
+          <input type="date" id="todo-deadline-input" />
+        </div>
+        <div class="form-group">
+          <label>Prioritas</label>
+          <select id="todo-priority-input">
+            <option value="low">Rendah</option>
+            <option value="medium" selected>Sedang</option>
+            <option value="high">Tinggi</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button id="btn-save-todo" class="btn-primary">Simpan</button>
+      <button class="btn-secondary modal-close" data-modal="modal-todo">Batal</button>
+    </div>
+    <input type="hidden" id="todo-edit-id" />
+  </div>
+</div>
+
+<!-- Journey Label Modal -->
+<div id="modal-journey" class="modal-overlay hidden">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>Beri Label Lokasi</h3>
+      <button class="modal-close" data-modal="modal-journey"><i data-lucide="x"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label>Label / Nama Tempat</label>
+        <input type="text" id="journey-label-input" placeholder="contoh: Kantor, Warung Makan..." />
+      </div>
+      <div id="journey-coords-display" class="coords-display"></div>
+    </div>
+    <div class="modal-footer">
+      <button id="btn-save-journey" class="btn-primary">Simpan Titik</button>
+      <button class="btn-secondary modal-close" data-modal="modal-journey">Batal</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast Notification -->
+<div id="toast" class="toast hidden"></div>
+
+<!-- ══════════════════════════════════════════════
+     SCRIPTS
+══════════════════════════════════════════════ -->
+<!-- Firebase SDK (compat v9) -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<!-- App Config & Logic -->
+<script src="firebase-config.js"></script>
+<script src="main.js"></script>
+
+</body>
+</html>
